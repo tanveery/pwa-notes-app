@@ -35,6 +35,24 @@ namespace PWANotesApp.Web.ViewModels
         }
     }
 
+    public class NoteDetailsViewModel : IndexNoteViewModel
+    {
+        public List<NoteItemDetailsViewModel> Items
+        {
+            get;
+            set;
+        }
+    }
+
     public class NewNoteViewModel : NoteViewModel
     { }
+
+    public class EditNoteTitleViewModel : NoteViewModel
+    {
+        public int Id
+        {
+            get;
+            set;
+        }
+    }
 }

@@ -1,51 +1,53 @@
-﻿@model PWANotesApp.Web.Models.Note
+﻿@model PWANotesApp.Web.ViewModels.NoteDetailsViewModel
 
 @{
     ViewData["Title"] = "Note";
 }
 
-<h1>Note</h1>
+<h1>@Model.Title<span class="float-md-right"><a asp-action="EditTitle" asp-route-id="@Model.Id">Edit</a></span></h1>
 <hr />
-<div>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Owner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Owner)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedBy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastUpdatedBy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastUpdatedBy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastUpdatedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastUpdatedDate)
-        </dd>
-    </dl>
-</div>
+<p>
+    <a asp-action="NewTextItem" asp-route-id="@Model.Id" class="btn btn-light">Add New Text</a>
+</p>
+<hr />
+<form id="frmNoteItems" asp-action="DeleteItem">
+    @foreach (var item in Model.Items)
+    {
+        <div class="row">
+            <div class="col-md-9">
+                @if (item.Type == PWANotesApp.Web.Models.NoteItemType.Text)
+                {
+                    <p>@item.Content</p>
+                }
+            </div>
+            <div class="col-md-3 float-md-right">
+                <a asp-action="EditTextItem" asp-route-id="@item.Id">Edit</a> | <a href="#" onclick="onDelete(@item.Id); return false;">Delete</a>
+            </div>
+        </div>
+
+    }
+</form>
 <div>
     <a asp-action="Index" class="btn btn-dark">Back to Notes</a>
 </div>
+
+@section Scripts
+{
+    <script>
+        function onDelete(id) {
+            var result = confirm("Are you sure you want to delete this item?");
+            if (result) {
+                var form = document.forms["frmNoteItems"];
+                var hdInputId = document.createElement("input");
+
+                hdInputId.value = id;
+                hdInputId.name = "id";
+                form.appendChild(hdInputId);
+
+                document.body.appendChild(form);
+
+                form.submit();
+            }
+        }
+    </script>
+}
