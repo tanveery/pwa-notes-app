@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/1364d565-5d69-4890-b8c2-d6a89fa9807a/resourceGroups/rg-pwa-app/providers/Microsoft.Sql/servers/pwa-app/databases/db-pwa-app",
+      "type": "mssql.azure",
+      "connectionId": "DefaultConnection",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}
