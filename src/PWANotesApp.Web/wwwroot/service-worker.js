@@ -6,6 +6,6 @@ self.addEventListener('activate', (event) => {
     console.log('activate handler', event);
 });
 
-self.addEventListener(fetch, (event) => {
+self.addEventListener("fetch", (event) => {
     console.log('fetch handler', event);
 });
