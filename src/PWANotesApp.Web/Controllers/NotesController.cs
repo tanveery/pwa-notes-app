@@ -8,11 +8,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PWANotesApp.Web.Data;
 using PWANotesApp.Web.Models;
+using PWANotesApp.Web.ViewModels;
 
 namespace PWANotesApp.Web.Controllers
 {
     [Authorize]
-    public class NotesController : Controller
+    public class NotesController : PWANotesApp.Web.Base.ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -56,15 +57,28 @@ namespace PWANotesApp.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Owner,CreatedBy,CreatedDate,LastUpdatedBy,LastUpdatedDate")] Note note)
+        public async Task<IActionResult> Create(NewNoteViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(note);
+                var userId = GetUserId();
+
+                var note = new Note()
+                {
+                    Title = model.Title,
+                    Owner = userId,
+                    CreatedBy = userId,
+                    CreatedDate = DateTime.UtcNow,
+                    LastUpdatedBy = userId,
+                    LastUpdatedDate = DateTime.UtcNow
+                };
+
+                _context.Notes.Add(note);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(note);
+
+            return View(model);
         }
 
         // GET: Notes/Edit/5
