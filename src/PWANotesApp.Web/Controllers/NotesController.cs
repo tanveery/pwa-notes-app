@@ -25,7 +25,21 @@ namespace PWANotesApp.Web.Controllers
         // GET: Notes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Notes.ToListAsync());
+            var notes = await _context.Notes.ToListAsync();
+            var model = new List<IndexNoteViewModel>();
+
+            foreach(var note in notes)
+            {
+                model.Add(new IndexNoteViewModel()
+                {
+                    Id = note.Id,
+                    Title = note.Title,
+                    CreatedDate = note.CreatedDate,
+                    LastUpdatedDate = note.LastUpdatedDate
+                });
+            }
+
+            return View(model);
         }
 
         // GET: Notes/Details/5
@@ -47,7 +61,7 @@ namespace PWANotesApp.Web.Controllers
         }
 
         // GET: Notes/Create
-        public IActionResult Create()
+        public IActionResult New()
         {
             return View();
         }
@@ -57,7 +71,7 @@ namespace PWANotesApp.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(NewNoteViewModel model)
+        public async Task<IActionResult> New(NewNoteViewModel model)
         {
             if (ModelState.IsValid)
             {

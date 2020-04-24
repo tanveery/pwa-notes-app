@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PWANotesApp.Web.ViewModels
 {
-    public class NewNoteViewModel
+    public class NoteViewModel
     {
         public string Title
         {
@@ -13,4 +13,28 @@ namespace PWANotesApp.Web.ViewModels
             set;
         }
     }
+
+    public class IndexNoteViewModel : NoteViewModel
+    {
+        public int Id
+        {
+            get;
+            set;
+        }
+
+        public DateTime CreatedDate
+        {
+            get;
+            set;
+        }
+
+        public DateTime LastUpdatedDate
+        {
+            get;
+            set;
+        }
+    }
+
+    public class NewNoteViewModel : NoteViewModel
+    { }
 }
