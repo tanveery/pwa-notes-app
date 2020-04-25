@@ -1,5 +1,5 @@
 # PWA Notes App
-Welcome to the PWA Notes app that can be used as reference implementation for building PWA apps using Microsoft ASP.NET Core and SQL Server.
+Welcome to the PWA Notes app that can be used as end-to-end reference implementation for building Proegressive Web Apps (PWAs) using Microsoft ASP.NET Core.
 
 ## Technology Stack
 The following is the full list of client-side technologies used in the project:
