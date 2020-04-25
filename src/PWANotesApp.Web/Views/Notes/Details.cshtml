@@ -4,11 +4,7 @@
     ViewData["Title"] = "Note";
 }
 
-<h2>@Model.Title<a asp-action="EditTitle" asp-route-id="@Model.Id" class="float-lg-right"><i class="fa fa-edit"></i></a></h2>
-<hr />
-<p>
-    <a asp-action="NewTextItem" asp-route-id="@Model.Id" class="btn btn-light"><i class="fa fa-plus"></i>&nbsp;Add New Text</a>
-</p>
+<h2>@Model.Title<a asp-action="EditTitle" asp-route-id="@Model.Id" class="btn btn-light float-lg-right"><i class="fa fa-edit"></i></a></h2>
 <hr />
 <form id="frmNoteItems" asp-action="DeleteItem">
     @foreach (var item in Model.Items)
@@ -21,15 +17,18 @@
                 }
             </div>
             <div class="col-md-3">
-                <span class="float-md-right"><a asp-action="EditTextItem" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a><span>&nbsp;</span><a href="#" onclick="onDelete(@item.Id); return false;"><i class="fa fa-trash-alt"></i></a></span>
+                <span class="float-md-right">
+                    <a asp-action="NewTextItem" asp-route-id="@Model.Id" class="btn btn-light"><i class="fa fa-plus-circle"></i></a>
+                    <span>&nbsp;</span>
+                    <a asp-action="EditTextItem" asp-route-id="@item.Id" class="btn btn-light"><i class="fa fa-edit"></i></a>
+                    <span>&nbsp;</span>
+                    <a href="#" onclick="onDelete(@item.Id); return false;" class="btn btn-light"><i class="fa fa-trash-alt"></i></a>
+                </span>
             </div>
         </div>
 
     }
 </form>
-<div>
-    <a asp-action="Index" class="btn btn-dark">Back to Notes</a>
-</div>
 
 @section Scripts
 {
