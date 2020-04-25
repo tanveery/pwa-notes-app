@@ -6,11 +6,12 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const assetsCacheName = 'AssetsCache-v1';
-const dynamicCacheName = 'DynamicCache-v1';
+const cacheName = 'cache-v1';
 
-const assetsList = [
+const resourcesToPrecache = [
     '/',
+    '/home',
+    '/home/index',
     '/error/offline',
     '/lib/bootstrap/dist/css/bootstrap.min.css',
     '/lib/fontawesome/css/all.css',
@@ -31,16 +32,19 @@ const assetsList = [
 ];
 
 self.addEventListener('install', event => {
-    event.waitUntil(caches.open(assetsCacheName).then(cache => {
-        cache.addAll(assetsList);
-    }));
+    event.waitUntil(
+        caches.open(cacheName)
+            .then(cache => {
+                return cache.addAll(resourcesToPrecache);
+            })
+    );
 });
 
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
             return Promise.all(keys
-                .filter(key => key !== assetsCacheName && key !== dynamicCacheName)
+                .filter(key => key !== cacheName)
                 .map(key => caches.delete(key))
             )
         })
@@ -49,23 +53,20 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request).then(cacheResponse => {
-            return cacheResponse || fetch(event.request).then(serverResponse => {
-                return caches.open(dynamicCacheName).then(cache => {
-                    cache.put(event.request.url, serverResponse.clone());
-                    return serverResponse;
-                })
-            });
-        }).catch(() => {
-            if (event.request.url.indexOf('.png') > -1 || event.request.url.indexOf('.jpg') > -1 || event.request.url.indexOf('.jpeg') > -1) {
-                return caches.match('/img/offline-image.png');
-            }
-            else if (event.request.url.indexOf('.css') > -1 || event.request.url.indexOf('.js') > -1) {
-                // ignore the non-availability of CSS or JS files.
-            }
-            else {
-                return caches.match('/error/offline');
-            }
-        })
+        caches.match(event.request)
+            .then(cacheResponse => {
+                return cacheResponse || fetch(event.request);
+            })
+            .catch(() => {
+                if (event.request.url.indexOf('.png') > -1 || event.request.url.indexOf('.jpg') > -1 || event.request.url.indexOf('.jpeg') > -1) {
+                    return caches.match('/img/offline-image.png');
+                }
+                else if (event.request.url.indexOf('.css') > -1 || event.request.url.indexOf('.js') > -1) {
+                    // ignore the non-availability of CSS or JS files.
+                }
+                else {
+                    return caches.match('/error/offline');
+                }
+            })
     );
 });
