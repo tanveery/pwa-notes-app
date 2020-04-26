@@ -25,6 +25,9 @@ namespace PWANotesApp.Web.Controllers
     public class NotesController : PWANotesApp.Web.Base.ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        
+        private const int POSITION_ABOVE = 0;
+        private const int POSITION_BELOW = 1;
 
         public NotesController(ApplicationDbContext context)
         {
@@ -80,14 +83,15 @@ namespace PWANotesApp.Web.Controllers
             {
                 model.Items = new List<NoteItemDetailsViewModel>();
 
-                foreach (var item in note.Items)
+                foreach (var item in note.Items.OrderBy(m => m.Order))
                 {
                     model.Items.Add(new NoteItemDetailsViewModel()
                     {
                         Id = item.Id,
                         Content = item.Content,
                         NoteId = item.NoteId,
-                        Type = item.Type
+                        Type = item.Type,
+                        Order = item.Order
                     });
                 }
             }
@@ -229,7 +233,7 @@ namespace PWANotesApp.Web.Controllers
 
         #region Note Item Actions
 
-        public async Task<IActionResult> NewTextItem(int? id)
+        public async Task<IActionResult> NewTextItem(int? id, int? position, int? relItemId)
         {
             if (id == null)
             {
@@ -248,7 +252,9 @@ namespace PWANotesApp.Web.Controllers
             {
                 NoteId = note.Id,
                 TextContent = "",
-                Type = NoteItemType.Text
+                Type = NoteItemType.Text,
+                Position = position,
+                RelativeItemId = relItemId
             };
 
             return View(model);
@@ -282,11 +288,15 @@ namespace PWANotesApp.Web.Controllers
                 {
                     Content = model.TextContent,
                     NoteId = (int)id,
-                    Type = model.Type
+                    Type = model.Type,
+                    Order = 1
                 };
 
                 _context.NoteItems.Add(noteItem);
                 await _context.SaveChangesAsync();
+
+                await UpdateNoteItemsOrderAfterInsertAsync(note.Id, model.Position, model.RelativeItemId, noteItem.Id);
+
                 return RedirectToAction(nameof(Details), new { id = note.Id });
             }
 
@@ -370,7 +380,7 @@ namespace PWANotesApp.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteItem(int id)
+        public async Task<IActionResult> DeleteItem(int id, int? position, int? relItemId)
         {
             var noteItem = await _context.NoteItems.Include(m => m.Note)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -386,9 +396,109 @@ namespace PWANotesApp.Web.Controllers
             }
 
             var noteId = noteItem.NoteId;
+            var deletedItemOrder = noteItem.Order;
+
             _context.NoteItems.Remove(noteItem);
             await _context.SaveChangesAsync();
+
+            await UpdateNoteItemsOrderAfterDeleteAsync(noteId, deletedItemOrder);
+
             return RedirectToAction(nameof(Details), new { id = noteId });
+        }
+
+        private async Task UpdateNoteItemsOrderAfterInsertAsync(int noteId, int? position, int? relativeItemId, int itemId)
+        {
+            var note = await _context.Notes.Where(m => m.Id == noteId).Include(m => m.Items).FirstOrDefaultAsync();
+
+            if (note == null)
+            {
+                throw new Exception("Note not found.");
+            }
+
+            if(note.Items.Count == 1)
+            {
+                var newNoteItem = note.Items.FirstOrDefault();
+                newNoteItem.Order = 1;
+                _context.Update(newNoteItem);
+                return;
+            }
+
+            if(position == null)
+            {
+                throw new ArgumentNullException(nameof(position));
+            }
+
+            if (relativeItemId == null)
+            {
+                throw new ArgumentNullException(nameof(relativeItemId));
+            }
+
+            var relativeItem = note.Items.Where(m => m.Id == relativeItemId).SingleOrDefault();
+
+            int currentOrder = relativeItem.Order;
+            int desiredOrder = currentOrder + 1;
+
+            if (currentOrder == 1 && position == POSITION_ABOVE)
+            {
+                desiredOrder = currentOrder;
+            }
+            else
+            {
+                if (position == POSITION_ABOVE)
+                {
+                    desiredOrder = currentOrder;
+                }
+                else
+                {
+                    desiredOrder = currentOrder + 1;
+                }
+            }
+
+            IEnumerable<NoteItem> items = null;
+
+            if (position == POSITION_BELOW)
+            {
+                items = note.Items.Where(m => m.Order > currentOrder && m.Id != itemId);
+            }
+            else if (position == POSITION_ABOVE)
+            {
+                items = note.Items.Where(m => m.Order >= desiredOrder && m.Id != itemId);
+            }
+
+            foreach (var item in items)
+            {
+                item.Order = item.Order + 1;
+                _context.Entry<NoteItem>(item).State = EntityState.Modified;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var newItem = note.Items.Where(m => m.Id == itemId).SingleOrDefault();
+
+            newItem.Order = desiredOrder;
+            _context.Entry<NoteItem>(newItem).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task UpdateNoteItemsOrderAfterDeleteAsync(int noteId, int deletedItemOrder)
+        {
+            var note = _context.Notes.Where(m => m.Id == noteId).SingleOrDefault();
+
+            if (note == null)
+            {
+                throw new Exception("Note item not found.");
+            }
+
+             var items = _context.NoteItems.Where(m => m.NoteId == note.Id && m.Order > deletedItemOrder);
+
+            foreach (var item in items)
+            {
+                item.Order = item.Order - 1;
+                _context.Entry<NoteItem>(item).State = EntityState.Modified;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         #endregion Note Item Actions

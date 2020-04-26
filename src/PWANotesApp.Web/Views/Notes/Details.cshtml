@@ -6,30 +6,58 @@
 
 <h2>@Model.Title<a asp-action="EditTitle" asp-route-id="@Model.Id" class="btn btn-light float-lg-right"><i class="fa fa-edit"></i></a></h2>
 <hr />
-<form id="frmNoteItems" asp-action="DeleteItem">
-    @foreach (var item in Model.Items)
-    {
-        <div class="row">
-            <div class="col-md-9">
-                @if (item.Type == PWANotesApp.Web.Models.NoteItemType.Text)
-                {
-                    <p>@item.Content</p>
-                }
+@if (Model.Items != null && Model.Items.Count() > 0)
+{
+    <form id="frmNoteItems" asp-action="DeleteItem">
+        @foreach (var item in Model.Items)
+        {
+            <div class="row">
+                <div class="col-md-9">
+                    @if (item.Type == PWANotesApp.Web.Models.NoteItemType.Text)
+                    {
+                        <p>@item.Content</p>
+                    }
+                </div>
+                <div class="col-md-3">
+                    <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
+                        <a asp-action="EditTextItem" asp-route-id="@item.Id" class="btn btn-light"><i class="fa fa-edit"></i></a>
+                        <a href="#" onclick="onDelete(@item.Id); return false;" class="btn btn-light"><i class="fa fa-trash-alt"></i></a>
+                        <div class="btn-group" role="group">
+                            <button id="btnGroupDrop1" type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-plus-circle"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <a asp-action="NewTextItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Above</a>
+                                <a asp-action="NewTextItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Below</a>
+                                <div class="dropdown-divider"></div>
+                                <a asp-action="NewFileItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add File Above</a>
+                                <a asp-action="NewFileItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add File Below</a>
+                                <div class="dropdown-divider"></div>
+                                <a asp-action="NewGeoLocItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Geo Location Above</a>
+                                <a asp-action="NewGeoLocItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Geo Location Below</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3">
-                <span class="float-md-right">
-                    <a asp-action="NewTextItem" asp-route-id="@Model.Id" class="btn btn-light"><i class="fa fa-plus-circle"></i></a>
-                    <span>&nbsp;</span>
-                    <a asp-action="EditTextItem" asp-route-id="@item.Id" class="btn btn-light"><i class="fa fa-edit"></i></a>
-                    <span>&nbsp;</span>
-                    <a href="#" onclick="onDelete(@item.Id); return false;" class="btn btn-light"><i class="fa fa-trash-alt"></i></a>
-                </span>
+        }
+    </form>
+}
+else
+{
+    <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
+        <div class="btn-group" role="group">
+            <button id="btnGroupDrop1" type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-plus-circle"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                <a asp-action="NewTextItem" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add Text</a>
+                <a asp-action="NewFileItem" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add File</a>
+                <a asp-action="NewGeoLocItem" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add Geo Location</a>
             </div>
         </div>
-
-    }
-</form>
-
+    </div>
+}
 @section Scripts
 {
     <script>
@@ -41,9 +69,9 @@
 
                 hdInputId.value = id;
                 hdInputId.name = "id";
-                form.appendChild(hdInputId);
+                hdInputId.style.display = 'none';
 
-                document.body.appendChild(form);
+                form.appendChild(hdInputId);
 
                 form.submit();
             }

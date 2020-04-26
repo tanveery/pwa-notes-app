@@ -29,7 +29,22 @@ namespace PWANotesApp.Web.ViewModels
         }
     }
 
-    public class NewTextNoteItemViewModel : NoteItemViewModel
+    public class NewNoteItemViewModel : NoteItemViewModel
+    {
+        public int? Position
+        {
+            get;
+            set;
+        }
+
+        public int? RelativeItemId
+        {
+            get;
+            set;
+        }
+    }
+
+    public class NewTextNoteItemViewModel : NewNoteItemViewModel
     {
         public string TextContent
         {
@@ -50,6 +65,12 @@ namespace PWANotesApp.Web.ViewModels
     public class NoteItemDetailsViewModel : NoteItemViewModel
     {
         public int Id
+        {
+            get;
+            set;
+        }
+
+        public int Order
         {
             get;
             set;
