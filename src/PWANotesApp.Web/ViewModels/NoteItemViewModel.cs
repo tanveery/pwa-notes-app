@@ -6,6 +6,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+using Microsoft.AspNetCore.Http;
 using PWANotesApp.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,15 @@ namespace PWANotesApp.Web.ViewModels
     public class EditTextNoteItemViewModel : NewTextNoteItemViewModel
     {
         public int Id
+        {
+            get;
+            set;
+        }
+    }
+
+    public class NewImageNoteItemViewModel : NewNoteItemViewModel
+    {
+        public IFormFile Image
         {
             get;
             set;

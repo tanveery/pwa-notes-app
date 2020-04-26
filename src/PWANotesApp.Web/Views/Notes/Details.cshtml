@@ -17,6 +17,12 @@
                     {
                         <p>@item.Content</p>
                     }
+                    else if(item.Type == PWANotesApp.Web.Models.NoteItemType.Picture)
+                    {
+                        <p>
+                            <img src="~/content/img/@item.Content" />
+                        </p>
+                    }
                 </div>
                 <div class="col-md-3">
                     <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
@@ -30,8 +36,8 @@
                                 <a asp-action="NewTextItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Above</a>
                                 <a asp-action="NewTextItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Below</a>
                                 <div class="dropdown-divider"></div>
-                                <a asp-action="NewFileItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add File Above</a>
-                                <a asp-action="NewFileItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add File Below</a>
+                                <a asp-action="NewImageItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Image Above</a>
+                                <a asp-action="NewImageItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Image Below</a>
                                 <div class="dropdown-divider"></div>
                                 <a asp-action="NewGeoLocItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Geo Location Above</a>
                                 <a asp-action="NewGeoLocItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Geo Location Below</a>

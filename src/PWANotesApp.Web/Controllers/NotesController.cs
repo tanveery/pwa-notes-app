@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -25,13 +27,15 @@ namespace PWANotesApp.Web.Controllers
     public class NotesController : PWANotesApp.Web.Base.ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
         private const int POSITION_ABOVE = 0;
         private const int POSITION_BELOW = 1;
 
-        public NotesController(ApplicationDbContext context)
+        public NotesController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = hostEnvironment;
         }
 
         #region Note Actions
@@ -288,7 +292,7 @@ namespace PWANotesApp.Web.Controllers
                 {
                     Content = model.TextContent,
                     NoteId = (int)id,
-                    Type = model.Type,
+                    Type =  NoteItemType.Text,
                     Order = 1
                 };
 
@@ -327,7 +331,7 @@ namespace PWANotesApp.Web.Controllers
             {
                 Id = noteItem.Id,
                 NoteId = noteItem.NoteId,
-                Type = noteItem.Type,
+                Type =  noteItem.Type,
                 TextContent = noteItem.Content
             };
 
@@ -377,6 +381,76 @@ namespace PWANotesApp.Web.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> NewImageItem(int? id, int? position, int? relItemId)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var note = await _context.Notes
+                .FirstOrDefaultAsync(m => m.Id == (int)id && m.Owner == GetUserId());
+
+            if (note == null)
+            {
+                return NotFound();
+            }
+
+            var model = new NewImageNoteItemViewModel()
+            {
+                NoteId = note.Id,
+                Type = NoteItemType.Text,
+                Position = position,
+                RelativeItemId = relItemId
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> NewImageItem(int? id, NewImageNoteItemViewModel model)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (id != model.NoteId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var note = await _context.Notes
+                    .FirstOrDefaultAsync(m => m.Id == (int)id && m.Owner == GetUserId());
+
+                if (note == null)
+                {
+                    return NotFound();
+                }
+
+                var fileName = UploadedImage(model);
+
+                var noteItem = new NoteItem()
+                {
+                    Content = fileName,
+                    NoteId = (int)id,
+                    Type = NoteItemType.Picture,
+                    Order = 0
+                };
+
+                _context.NoteItems.Add(noteItem);
+                await _context.SaveChangesAsync();
+
+                await UpdateNoteItemsOrderAfterInsertAsync(note.Id, model.Position, model.RelativeItemId, noteItem.Id);
+
+                return RedirectToAction(nameof(Details), new { id = note.Id });
+            }
+
+            return View(model);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -499,6 +573,24 @@ namespace PWANotesApp.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        private string UploadedImage(NewImageNoteItemViewModel model)
+        {
+            string uniqueFileName = null;
+
+            if (model.Image != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "content/img");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.Image.CopyTo(fileStream);
+                }
+            }
+
+            return uniqueFileName;
         }
 
         #endregion Note Item Actions
