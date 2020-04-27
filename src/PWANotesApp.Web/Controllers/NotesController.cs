@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PWANotesApp.Web.Data;
 using PWANotesApp.Web.Models;
 using PWANotesApp.Web.ViewModels;
@@ -451,6 +452,47 @@ namespace PWANotesApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddGeoLoc(int? id, int? position, int? relItemId, double? longitude, double? latitude)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var note = await _context.Notes
+                .FirstOrDefaultAsync(m => m.Id == (int)id && m.Owner == GetUserId());
+
+            if (note == null)
+            {
+                return NotFound();
+            }
+
+            var geoLoc = new
+            {
+                Longitude = longitude,
+                Latitude = latitude
+            };
+
+            string strGeoLocJson = JsonConvert.SerializeObject(geoLoc);
+
+            var noteItem = new NoteItem()
+            {
+                Content = strGeoLocJson,
+                NoteId = (int)id,
+                Type = NoteItemType.GeoLocation,
+                Order = 1
+            };
+
+            _context.NoteItems.Add(noteItem);
+            await _context.SaveChangesAsync();
+
+            await UpdateNoteItemsOrderAfterInsertAsync(note.Id, position, relItemId, noteItem.Id);
+
+            return RedirectToAction(nameof(Details), new { id = note.Id });
+        }  
 
         [HttpPost]
         [ValidateAntiForgeryToken]
