@@ -16,7 +16,7 @@ namespace PWANotesApp.Web.Models
     public enum NoteItemType
     {
         Text  = 0,
-        Picture = 1,
+        Image = 1,
         GeoLocation = 2
     }
 }
