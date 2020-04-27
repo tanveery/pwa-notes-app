@@ -238,7 +238,7 @@ namespace PWANotesApp.Web.Controllers
 
         #region Note Item Actions
 
-        public async Task<IActionResult> NewTextItem(int? id, int? position, int? relItemId)
+        public async Task<IActionResult> AddText(int? id, int? position, int? relItemId)
         {
             if (id == null)
             {
@@ -267,7 +267,7 @@ namespace PWANotesApp.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> NewTextItem(int? id, NewTextNoteItemViewModel model)
+        public async Task<IActionResult> AddText(int? id, NewTextNoteItemViewModel model)
         {
             if(id == null)
             {
@@ -308,7 +308,7 @@ namespace PWANotesApp.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> EditTextItem(int? id)
+        public async Task<IActionResult> EditText(int? id)
         {
             if (id == null)
             {
@@ -341,7 +341,7 @@ namespace PWANotesApp.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTextItem(int id, EditTextNoteItemViewModel model)
+        public async Task<IActionResult> EditText(int id, EditTextNoteItemViewModel model)
         {
             if (id != model.Id)
             {
@@ -382,7 +382,7 @@ namespace PWANotesApp.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> NewImageItem(int? id, int? position, int? relItemId)
+        public async Task<IActionResult> AddImage(int? id, int? position, int? relItemId)
         {
             if (id == null)
             {
@@ -410,7 +410,7 @@ namespace PWANotesApp.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> NewImageItem(int? id, NewImageNoteItemViewModel model)
+        public async Task<IActionResult> AddImage(int? id, NewImageNoteItemViewModel model)
         {
             if (id == null)
             {

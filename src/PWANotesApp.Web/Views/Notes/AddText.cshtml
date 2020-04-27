@@ -1,14 +1,14 @@
 ﻿@model PWANotesApp.Web.ViewModels.NewTextNoteItemViewModel
 
 @{
-    ViewData["Title"] = "New Text Note Item";
+    ViewData["Title"] = "Add Text";
 }
 
-<h1>New Text Note Item</h1>
+<h1>Add Text</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="NewTextItem">
+        <form asp-action="AddText">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Position" />
             <input type="hidden" asp-for="RelativeItemId" />

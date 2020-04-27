@@ -45,18 +45,18 @@
             </div>
             <div class="col-md-3">
                 <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
-                    <a asp-action="EditTextItem" asp-route-id="@item.Id" class="btn btn-light"><i class="fa fa-edit"></i></a>
+                    <a asp-action="EditText" asp-route-id="@item.Id" class="btn btn-light"><i class="fa fa-edit"></i></a>
                     <a href="#" onclick="onDelete(@item.Id); return false;" class="btn btn-light"><i class="fa fa-trash-alt"></i></a>
                     <div class="btn-group" role="group">
                         <button id="btnGroupDrop1" type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus-circle"></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <a asp-action="NewTextItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Above</a>
-                            <a asp-action="NewTextItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Below</a>
+                            <a asp-action="AddText" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Above</a>
+                            <a asp-action="AddText" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Text Below</a>
                             <div class="dropdown-divider"></div>
-                            <a asp-action="NewImageItem" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Image Above</a>
-                            <a asp-action="NewImageItem" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Image Below</a>
+                            <a asp-action="AddImage" asp-route-id="@item.NoteId" asp-route-position="0" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Image Above</a>
+                            <a asp-action="AddImage" asp-route-id="@item.NoteId" asp-route-position="1" asp-route-relItemId="@item.Id" class="dropdown-item btn btn-light">Add Image Below</a>
                             <div class="dropdown-divider"></div>
                             <a href="#" onclick="getLocation(@item.NoteId, 0, @item.Id); return false;" class="dropdown-item btn btn-light">Add Geo Location Above</a>
                             <a href="#" onclick="getLocation(@item.NoteId, 1, @item.Id); return false;" class="dropdown-item btn btn-light">Add Geo Location Below</a>
@@ -75,8 +75,8 @@ else
                 <i class="fa fa-plus-circle"></i>
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a asp-action="NewTextItem" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add Text</a>
-                <a asp-action="NewImageItem" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add Image</a>
+                <a asp-action="AddText" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add Text</a>
+                <a asp-action="AddImage" asp-route-id="@Model.Id" class="dropdown-item btn btn-light">Add Image</a>
                 <a href="#" onclick="getLocation(@Model.Id, null, null); return false;" class="dropdown-item btn btn-light">Add Geo Location</a>
             </div>
         </div>

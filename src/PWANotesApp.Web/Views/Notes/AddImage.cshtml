@@ -8,13 +8,13 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="NewImageItem" enctype="multipart/form-data">
+        <form asp-action="AddImage" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Position" />
             <input type="hidden" asp-for="RelativeItemId" />
             <input type="hidden" asp-for="NoteId" />
             <div class="form-group">
-                <label asp-for="Image" class="control-label">Select the image that you want to upload::</label>
+                <label asp-for="Image" class="control-label">Select the image that you want to upload:</label>
                 <input asp-for="Image" class="form-control-file" />
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
