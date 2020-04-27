@@ -31,11 +31,11 @@
                         <img src="~/content/img/@item.Content" class="img-fluid" />
                     </p>
                 }
-                else if(item.Type == PWANotesApp.Web.Models.NoteItemType.GeoLocation)
+                else if (item.Type == PWANotesApp.Web.Models.NoteItemType.GeoLocation)
                 {
                     string mapPlaceholder = "mapPlaceholder" + item.Id.ToString();
-                    
-                    <div id="@mapPlaceholder"></div>
+
+                    <div id="@mapPlaceholder" style="position:relative;width:600px;height:400px;"></div>
                     <script>
                         var content = "@item.Content";
                         content = content.replace(new RegExp('&quot;', 'g'), '"');
@@ -142,22 +142,42 @@ else
             }
         }
 
-        if (geoLocItems != null && geoLocItems.length > 0) {
-            geoLocItems.forEach(function (item, index) {
-                var coords = JSON.parse(item.content);
-                var latlon = coords.Latitude + "," + coords.Longitude;
+        function GetMap() {
+            if (geoLocItems != null && geoLocItems.length > 0) {
+                geoLocItems.forEach(function (item, index) {
+                    var coords = JSON.parse(item.content);
+                    //var latlon = coords.Latitude + "," + coords.Longitude;
 
-                /*
-                var img_url = "https://maps.googleapis.com/maps/api/staticmap?center=" + latlon + "&zoom=14&size=400x300&sensor=false&key={KEY}";
-                */
-                var id = "mapPlaceholder" + item.itemId;
-                var mapPlaceholder = document.getElementById(id);
-                /*
-                mapPlaceholder.innerHTML = "<img src='" + img_url + "'>";
-                */
-                mapPlaceholder.innerHTML = "<p>" + latlon + "</p>";
-            });
+                    /*
+                    var img_url = "https://maps.googleapis.com/maps/api/staticmap?center=" + latlon + "&zoom=14&size=400x300&sensor=false&key={KEY}";
+                    */
+                    var id = "#mapPlaceholder" + item.itemId;
+                    //var mapPlaceholder = document.getElementById(id);
+
+                    var map = new Microsoft.Maps.Map(id, {
+                        credentials: 'ArQwjTlcsab-tbnYcq4FQxvH9KBo8QycPqYqDIKa-aPTgCZlmbgPdj-vHk1s6zOc'
+                    });
+
+                    var loc = new Microsoft.Maps.Location(
+                        coords.Latitude,
+                        coords.Longitude);
+
+                    console.log(loc);
+
+                    //Add a pushpin at the user's location.
+                    var pin = new Microsoft.Maps.Pushpin(loc);
+                    map.entities.push(pin);
+
+                    //Center the map on the user's location.
+                    map.setView({ center: loc, zoom: 15 });
+
+                    /*
+                    mapPlaceholder.innerHTML = "<img src='" + img_url + "'>";
+                    */
+                    //mapPlaceholder.innerHTML = "<p>" + latlon + "</p>";
+                });
+            }
         }
-
     </script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
 }
