@@ -7,6 +7,7 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,18 @@ namespace PWANotesApp.Web.Base
 {
     public class ControllerBase : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public ControllerBase(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public string GetConfiguration(string key)
+        {
+            return _configuration[key];
+        }
+
         public string GetUserId()
         {
             return User.FindFirstValue(ClaimTypes.NameIdentifier);

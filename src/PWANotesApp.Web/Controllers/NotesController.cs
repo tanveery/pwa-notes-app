@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using PWANotesApp.Web.Data;
 using PWANotesApp.Web.Models;
@@ -33,7 +34,8 @@ namespace PWANotesApp.Web.Controllers
         private const int POSITION_ABOVE = 0;
         private const int POSITION_BELOW = 1;
 
-        public NotesController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
+        public NotesController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment, IConfiguration configuration)
+            : base(configuration)
         {
             _context = context;
             _webHostEnvironment = hostEnvironment;
@@ -100,6 +102,8 @@ namespace PWANotesApp.Web.Controllers
                     });
                 }
             }
+
+            ViewData["MapsKey"] = GetConfiguration("MapsKey");
 
             return View(model);
         }
