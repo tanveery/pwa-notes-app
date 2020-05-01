@@ -78,3 +78,9 @@ The manifest file **manifest.json** is located in the **wwwroot** folder as a st
   ]
 }
 ```
+### Reference to the Manifest File in HTML
+Reference to the manifest file is in the \_Layout.cshtml file to ensure that its replicated in all the views:
+```
+ <link rel="manifest" href="~/manifest.json">
+ ```
+
