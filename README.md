@@ -18,10 +18,10 @@ The following is the full list of server-side technologies used in the project:
 1. JSON-based manifest file.
 2. Reference to the manifest file in HTML.
 3. JavaScript service worker file.
-4. Initialization of service worker in HTML.
+4. Registration of service worker.
 
 ### Manifest File
-The manifest file **manifest.json** is located in the **wwwroot** folder as a static resource. The manifest file is a basic requirement for a PWA app:
+The manifest file **/wwwroot/manifest.json** is added as a static resource. The manifest file is a basic requirement for a PWA app:
 
 ```
 {
@@ -79,12 +79,12 @@ The manifest file **manifest.json** is located in the **wwwroot** folder as a st
 }
 ```
 ### Reference to the Manifest File in HTML
-Reference to the manifest file is in the **\_Layout.cshtml** file to ensure that its replicated in all the views:
+Reference to the manifest file is in the **/Views/Shared/\_Layout.cshtml** file to ensure that its replicated in all the views:
 ```
  <link rel="manifest" href="~/manifest.json">
  ```
-### Service Worker
-The service worker file **service-worker.js** is located in the **wwwroot** folder as a static resource. Besides the manifest file, a service worker is another basic requirement for a PWA app:
+### Service Worker File
+The service worker file **/wwwroot/service-worker.js** is added as a static resource. Besides the manifest file, a service worker is another basic requirement for a PWA app:
 ```
 const cacheName = 'cache-v1';
 
@@ -151,4 +151,16 @@ self.addEventListener('fetch', event => {
     );
 });
 ```
-
+### Registering Service Worker
+The service worker is registered in the **/wwwroot/js/site.js**:
+```
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => console.log('service worker registered', reg))
+        .catch(err => console.log('service worker not registered', err));
+}
+```
+The **site.js** script is referenced in the **/Views/Shared/\_Shared/Layout.cshtml** file:
+```
+<script src="~/js/site.js" asp-append-version="true"></script>
+```
