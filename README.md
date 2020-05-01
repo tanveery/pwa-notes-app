@@ -14,8 +14,14 @@ The following is the full list of server-side technologies used in the project:
 * **Database:** SQL Server
 * **Cloud platform:** Azure (optional)
 
-## Manifest File
-The manifest file **manifest.json** is located in the wwwroot folder as a static resource. The manifest file is a basic requirement for a PWA app.
+## PWA-Specific Code and Resources in the Project
+1. JSON-based manifest file.
+2. Reference to the manifest file in HTML.
+3. JavaScript service worker file.
+4. Initialization of service worker in HTML.
+
+### Manifest File
+The manifest file **manifest.json** is located in the **wwwroot** folder as a static resource. The manifest file is a basic requirement for a PWA app:
 
 ```
 {
