@@ -84,8 +84,11 @@ Reference to the manifest file is in the **/Views/Shared/\_Layout.cshtml** file 
 ### 2. Service Worker File
 The service worker file **/wwwroot/service-worker.js** is added as a static resource. Besides the manifest file, a service worker is another basic requirement for a PWA app:
 ```
+// The name of the cache. This name (the version part) should be changed whenever there is a change
+// in the list of resources to be cached so that the browser creates a brand new cache.
 const cacheName = 'cache-v1';
 
+// The list of resources to be cached.
 const resourcesToPrecache = [
     '/',
     '/home',
@@ -109,6 +112,8 @@ const resourcesToPrecache = [
     '/img/icons/icon-512.png'
 ];
 
+// The event that is fired after the service worker is registered for the first time or there is change in the service worker.
+// In this event, all the resources in the resourcesToPrecache array are cached.
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(cacheName)
@@ -118,6 +123,12 @@ self.addEventListener('install', event => {
     );
 });
 
+// After installation, the next event to fire is "activate". However, if an older version of the
+// service worker is still being used by one or more pages then this event will be in "waiting" until
+// those pages are closed.
+// In this event, we are iterating through all the caches where the key doesn't equal to the current key.
+// This effectively ensures that all the older caches are removed. This is why making a change to the 
+// cache name whenever an update to the cache is required.
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
@@ -129,6 +140,11 @@ self.addEventListener('activate', event => {
     );
 });
 
+// The "fetch" event is fired every time a resource is requested from the web server. Therefore, its the ideal event
+// apply cache related logic.
+// In this event, we try to load a resource from the cache first and if it doesn't exist in the cache then we allow the resource
+// to be fetched from the web server. As expected, there would be an error if the internet connection is not working which is why
+// the catch block allows us to load an offline resource (part of the cache).
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
@@ -136,6 +152,7 @@ self.addEventListener('fetch', event => {
                 return cacheResponse || fetch(event.request);
             })
             .catch(() => {
+                // If the resource is an image that can't be fetched from the server then load offline-image.png instead.
                 if (event.request.url.indexOf('.png') > -1 || event.request.url.indexOf('.jpg') > -1 || event.request.url.indexOf('.jpeg') > -1) {
                     return caches.match('/img/offline-image.png');
                 }
@@ -143,6 +160,7 @@ self.addEventListener('fetch', event => {
                     // ignore the non-availability of CSS or JS files.
                 }
                 else {
+                    // It probably is a page and therefore show the offline view isntead which is part of the cache.
                     return caches.match('/error/offline');
                 }
             })
