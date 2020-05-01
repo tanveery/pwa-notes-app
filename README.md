@@ -77,10 +77,19 @@ The manifest file **/wwwroot/manifest.json** is added as a static resource. The 
   ]
 }
 ```
+The following is the explanation of some of these manifest properties:
+* **name** is used when the app is installed. Required if **short_name** is not specified.
+* **short_name** is used on the user's home screen or launcher. Required if **name** is not specified.
+* **icons** are use on the home screen, launcher, task switcher, splash screen, etc. Icons of 192x192 and 512x512 pixel sizes are required by Chrome.
+* **start_url** specifies the starting URL when the app is launched. This property is required.
+* **display** is used to select what browser controls are shown when the app is launched. The possible values can be **fullscreen**, **standalone**, **minimal-u**, and **browser**.
+* **scope** defines the URL structure that encompasses all the entry and exit points in the web app. **start_url** must be within the scope.
+
 Reference to the manifest file is in the **/Views/Shared/\_Layout.cshtml** file to ensure that its replicated in all the views:
 ```
  <link rel="manifest" href="~/manifest.json">
  ```
+
 ### 2. Service Worker File
 The service worker file **/wwwroot/service-worker.js** is added as a static resource. Besides the manifest file, a service worker is another basic requirement for a PWA app:
 ```
