@@ -16,11 +16,10 @@ The following is the full list of server-side technologies used in the project:
 
 ## PWA-Specific Code and Resources in the Project
 1. JSON-based manifest file.
-2. Reference to the manifest file in HTML.
-3. JavaScript service worker file.
-4. Registration of service worker.
+2. JavaScript service worker file.
+3. Registration of service worker.
 
-### Manifest File
+### 1. Manifest File
 The manifest file **/wwwroot/manifest.json** is added as a static resource. The manifest file is a basic requirement for a PWA app:
 
 ```
@@ -78,12 +77,11 @@ The manifest file **/wwwroot/manifest.json** is added as a static resource. The 
   ]
 }
 ```
-### Reference to the Manifest File in HTML
 Reference to the manifest file is in the **/Views/Shared/\_Layout.cshtml** file to ensure that its replicated in all the views:
 ```
  <link rel="manifest" href="~/manifest.json">
  ```
-### Service Worker File
+### 2. Service Worker File
 The service worker file **/wwwroot/service-worker.js** is added as a static resource. Besides the manifest file, a service worker is another basic requirement for a PWA app:
 ```
 const cacheName = 'cache-v1';
@@ -151,7 +149,7 @@ self.addEventListener('fetch', event => {
     );
 });
 ```
-### Registering Service Worker
+### 3. Registeration of Service Worker
 The service worker is registered in the **/wwwroot/js/site.js**:
 ```
 if ('serviceWorker' in navigator) {
